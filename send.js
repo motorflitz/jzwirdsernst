@@ -5,7 +5,7 @@ export async function onRequestPost(context) {
   const message = formData.get("message");
 
   const apiKey = context.env.RESEND_API_KEY;
-  const to = "moritsweba@gmail.com";
+  const to = "moritsweba@gmail.com"; // Empfängeradresse
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -14,11 +14,18 @@ export async function onRequestPost(context) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "mediaMW Kontakt <onboarding@resend.dev>",
+      from: "mediaMW Kontakt <onboarding@resend.dev>", // später anpassen, wenn du eigene Domain hast
       to,
       subject: "Neue Nachricht von deiner Website",
       reply_to: email,
-      text: `Von: ${name} <${email}>\n\n${message}`,
+      html: `
+        <h2 style="color:#0a84ff;">Neue Nachricht über deine Website</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>E-Mail:</strong> ${email}</p>
+        <p><strong>Nachricht:</strong><br>${message.replace(/\\n/g, "<br>")}</p>
+        <hr>
+        <p style="font-size:12px;color:#999;">Gesendet über das mediaMW-Website-System.</p>
+      `,
     }),
   });
 
@@ -26,3 +33,4 @@ export async function onRequestPost(context) {
     ? new Response("Erfolg", { status: 200 })
     : new Response("Fehler beim Senden", { status: 500 });
 }
+
